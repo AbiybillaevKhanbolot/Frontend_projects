@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Developer vs Designer Switch</title>
+  <style>
+    * {
+      border: 0;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --hue: 223;
+      --bg: hsl(var(--hue),10%,90%);
+      --fg: hsl(var(--hue),10%,10%);
+      --switch-dev: hsl(223,90%,50%);
+      --switch-des: hsl(283,90%,70%);
+      --trans-dur: 0.3s;
+      --trans-timing: cubic-bezier(0.65,0,0.35,1);
+      font-size: calc(21px + (120 - 21) * (100vw - 280px) / (3840 - 280));
+    }
+    body,
+    button {
+      color: var(--fg);
+      font: 1em/1.5 "DM Sans", sans-serif;
+      transition: background-color var(--trans-dur), color var(--trans-dur);
+    }
+    body {
+      background-color: var(--bg);
+      display: flex;
+      height: 100vh;
+    }
+    .switch {
+      display: flex;
+      align-items: center;
+      margin: auto;
+    }
+    .switch__button,
+    .switch__icon {
+      display: block;
+    }
+    .switch__button,
+    .switch__label {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .switch__button {
+      background-color: var(--switch-dev);
+      border-radius: 0.5em;
+      box-shadow: 0 -0.0625em 0 hsl(var(--hue),10%,80%), 0 0.0625em 0 hsl(0,0%,100%);
+      position: relative;
+      width: 3em;
+      height: 1.5em;
+      transition: background-color var(--trans-dur) var(--trans-timing), box-shadow var(--trans-dur);
+      appearance: none;
+    }
+    .switch__button::before {
+      background-color: hsl(0,0%,100%);
+      border-radius: 0.25em;
+      box-shadow: 0 0.125em 0.125em hsla(0,0%,0%,0.2);
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0.25em;
+      left: 0.25em;
+      width: 1em;
+      height: 1em;
+      transition: transform var(--trans-dur) var(--trans-timing);
+    }
+    .switch__button[aria-labelledby="designer"] {
+      background-color: var(--switch-des);
+    }
+    .switch__button[aria-labelledby="designer"]::before {
+      transform: translateX(1.5em);
+    }
+    .switch__label {
+      font-size: 0.75em;
+      line-height: 2;
+      padding-inline-end: 0.75em;
+    }
+    .switch__label + .switch__label {
+      padding-inline-start: 0.75em;
+    }
+    /* Dark theme */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: hsl(var(--hue),10%,10%);
+        --fg: hsl(var(--hue),10%,90%);
+      }
+      .switch__button {
+        box-shadow: 0 -0.0625em 0 hsl(0,0%,0%), 0 0.0625em 0 hsl(var(--hue),10%,20%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="switch">
+    <label class="switch__label" for="occupation" id="developer">Developer</label>
+    <button class="switch__button" type="button" id="occupation" title="Developer or designer?" aria-live="polite" aria-labelledby="developer">
+      <!-- SVG можно убрать или заменить по желанию -->
+    </button>
+    <label class="switch__label" for="occupation" id="designer">Designer</label>
+  </div>
+
+  <script>
+    class DevOrDesigner {
+      constructor(buttonSelector) {
+        this.button = document.querySelector(buttonSelector);
+        this._occupation = "developer";
+        this.button?.addEventListener("click", this.occupationToggle.bind(this));
+      }
+
+      get occupation() {
+        return this._occupation;
+      }
+
+      set occupation(value) {
+        this._occupation = value;
+        this.button?.setAttribute("aria-labelledby", this._occupation);
+      }
+
+      occupationToggle() {
+        this.occupation = this.occupation === "developer" ? "designer" : "developer";
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      new DevOrDesigner("#occupation");
+    });
+  </script>
+</body>
+</html>
